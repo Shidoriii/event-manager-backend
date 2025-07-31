@@ -1,24 +1,28 @@
-const functions = require("firebase-functions");
-const express = require("express");
-const cors = require("cors");
-require("dotenv").config();
-const connectDB = require("./config/db");
+const express = require('express');
+const cors = require('cors');
+const dotenv = require('dotenv');
+const connectDB = require('./config/db');
 
+// Load env variables
+dotenv.config();
+
+// Connect to MongoDB
+connectDB();
+
+// Initialize Express
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Connect MongoDB
-connectDB();
-
 // Routes
-const userRoutes = require("./routes/userRoutes");
-const eventRoutes = require("./routes/eventRoutes");
-app.use("/api/users", userRoutes);
-app.use("/api/events", eventRoutes);
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/events', require('./routes/eventRoutes'));
 
-// Export as cloud function
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+// Health check
+app.get('/', (req, res) => {
+  res.send('API is running...');
 });
+
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
